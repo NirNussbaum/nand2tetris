@@ -7,9 +7,8 @@ public class Parser {
     public Scanner sc; // scanner for read the vm file
     public String VMcommand;
 
-    // Constrctor, open the source file --> file.vm
-    public Parser(String sourcePath) {
-        File file = new File(sourcePath);
+    // Constrctor, open the source file or Dic --> file.vm
+    public Parser(File file) {
         try {
             this.sc = new Scanner(file);
         } catch (FileNotFoundException e) {

@@ -13,6 +13,7 @@ public class CodeWriter {
         try {
             FileWriter outPutFileWriter = new FileWriter(outPutFile);
             bw = new BufferedWriter(outPutFileWriter);
+            setFileName(outPutFile.getName());
         } catch (IOException e) {
             System.out.println("IOException");
             return;
@@ -497,5 +498,4 @@ public class CodeWriter {
             return;
         }
     }
-
 }
