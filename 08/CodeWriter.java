@@ -406,8 +406,84 @@ public class CodeWriter {
         try {
             bw.write("// " + functionName + " " + nVars);
             bw.newLine();
+            //Function's entry point
+            writeLabel(functionName);
+            //repeat push nVars local var
+            for (int i = 0; i < nVars; i++) {
+                writePushPop("PUSH", "constant", 0);
+            }
         } catch (IOException e) {
             System.out.println("IOException writeFunction");
+            return;
+        }
+    }
+
+    // Writes assembly code that Restore Segments.
+    private void writeRestoreSegments(String segment) {
+        try {
+            bw.write("@endFrame");
+            bw.newLine();
+            bw.write("D=M");
+            bw.newLine();
+            if (segment.equals("THAT")) bw.write("@1");
+            else if (segment.equals("THIS")) bw.write("@2");
+            else if (segment.equals("ARG")) bw.write("@3");
+            else if (segment.equals("LCL")) bw.write("@4");
+            bw.newLine();
+            bw.write("D=D-A");
+            bw.newLine();
+            bw.write("@" + segment);
+            bw.newLine();
+            bw.write("M=D");
+            bw.newLine();
+        } catch (IOException e) {
+            System.out.println("IOException writeReturn");
+            return;
+        }
+    }
+
+    // Writes assembly code that effects the function command.
+    public void writeReturn() {
+        try {
+            bw.write("//Return");
+            bw.newLine();
+            // endFrame = LCL
+            bw.write("@LCL");
+            bw.newLine();
+            bw.write("D=M");
+            bw.newLine();
+            bw.write("@endFrame");
+            bw.newLine();
+            bw.write("M=D");
+            bw.newLine();
+            // retAddr = RAM[endFrame - 5]
+            bw.write("@5");
+            bw.newLine();
+            bw.write("D=D-A");
+            bw.newLine();
+            bw.write("@retAddr");
+            bw.newLine();
+            bw.write("M=D");
+            bw.newLine();
+            // RAM[ARG] = pop()
+            writePushPop("POP", "argument", 0);
+            // SP = ARG + 1
+            bw.write("@ARG");
+            bw.newLine();
+            bw.write("D=M");
+            bw.newLine();
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("M=D+1");
+            bw.newLine();
+            writeRestoreSegments("THAT");
+            writeRestoreSegments("THIS");
+            writeRestoreSegments("ARG");
+            writeRestoreSegments("LCL");
+            //Goto retAddr
+            writeGoto("retAddr");
+        } catch (IOException e) {
+            System.out.println("IOException writeReturn");
             return;
         }
     }
