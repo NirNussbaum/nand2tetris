@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 public class CodeWriter {
 
     public BufferedWriter bw;
+    public String fileName;
 
     // Opens an output file and gets ready to write into it.
     public CodeWriter(File outPutFile) {
@@ -16,6 +17,11 @@ public class CodeWriter {
             System.out.println("IOException");
             return;
         }
+    }
+
+    // Informs that the translation of a new VM file hat started.
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     // template for arithmetic and logical commands.
@@ -207,7 +213,7 @@ public class CodeWriter {
                 bw.write("//POP " + segment + " " + index);
                 bw.newLine();
                 if (segment.equals("temp")) {
-                    //temp
+                    // temp
                     bw.write("@" + (5 + index));
                     bw.newLine();
                     bw.write("D=A");
@@ -251,6 +257,157 @@ public class CodeWriter {
             }
         } catch (IOException e) {
             System.out.println("IOException close function.");
+            return;
+        }
+    }
+
+    // Writes assembly code that effects the label command.
+    public void writeLabel(String label) {
+        try {
+            bw.write("(" + label + ")");
+            bw.newLine();
+        } catch (IOException e) {
+            System.out.println("IOException writeLabel");
+            return;
+        }
+    }
+
+    // Writes assembly code that effects the goto command.
+    public void writeGoto(String label) {
+        try {
+            bw.write("@" + label);
+            bw.newLine();
+            bw.write("0;JMP");
+            bw.newLine();
+        } catch (IOException e) {
+            System.out.println("IOException writeLabel");
+            return;
+        }
+    }
+
+    // Writes assembly code that effects the if-goto command.
+    public void writeIf(String label) {
+        try {
+            bw.write("//if-goto " + label);
+            bw.newLine();
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("M=M-1"); // SP--
+            bw.newLine();
+            bw.write("A=M");
+            bw.newLine();
+            bw.write("D=M");
+            bw.newLine();
+            bw.write("@" + label);
+            bw.newLine();
+            bw.write("D;JNE"); // if D != 0 jump to label
+            bw.newLine();
+        } catch (IOException e) {
+            System.out.println("IOException writeIf");
+            return;
+        }
+    }
+
+    // Writes assembly code that saves segments.
+    private void writeSaveSegment(String segment) {
+        try {
+            bw.write("@" + segment);
+            bw.newLine();
+            bw.write("D=M");
+            bw.newLine();
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("A=M");
+            bw.newLine();
+            bw.write("M=D"); // saved segment
+            bw.newLine();
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("M=M+1"); // SP++
+            bw.newLine();
+        } catch (IOException e) {
+            System.out.println("IOException writeCall");
+            return;
+        }
+    }
+
+    // Writes assembly code that effects the call-function command.
+    public void writeCall(String functionName, int nArgs) {
+        try {
+            bw.write("//Call " + functionName + " " + nArgs);
+            bw.newLine();
+            // Save return address
+            bw.write("@retAddrLabel");
+            bw.newLine();
+            bw.write("D=A");
+            bw.newLine();
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("A=M");
+            bw.newLine();
+            bw.write("M=D");
+            bw.newLine();
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("M=M+1");
+            bw.newLine();
+            writeSaveSegment("LCL");
+            writeSaveSegment("ARG");
+            writeSaveSegment("THIS");
+            writeSaveSegment("THAT");
+            // ARG = SP - 5 - nArgs
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("A=M");
+            bw.newLine();
+            bw.write("M=A");
+            bw.newLine();
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("M=M+1"); // SP++
+            bw.newLine();
+            writePushPop("PUSH", "constant", 5);
+            writeArithmetic("sub");
+            writePushPop("PUSH", "constant", nArgs);
+            writeArithmetic("sub");
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("A=M-1");
+            bw.newLine();
+            bw.write("D=M");
+            bw.newLine();
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("M=M-1"); // SP--
+            bw.newLine();
+            bw.write("@ARG");
+            bw.newLine();
+            bw.write("M=D");
+            bw.newLine();
+            //LCL = SP
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("D=M");
+            bw.newLine();
+            bw.write("@LCL");
+            bw.newLine();
+            bw.write("M=D");
+            bw.newLine();
+            writeGoto(functionName);
+            writeLabel("retAddrLabel");
+        } catch (IOException e) {
+            System.out.println("IOException writeCall");
+            return;
+        }
+    }
+
+    // Writes assembly code that effects the function command.
+    public void writeFunction(String functionName, int nVars) {
+        try {
+            bw.write("// " + functionName + " " + nVars);
+            bw.newLine();
+        } catch (IOException e) {
+            System.out.println("IOException writeFunction");
             return;
         }
     }

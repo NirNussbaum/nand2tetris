@@ -51,9 +51,19 @@ public class Parser {
             return "C_POP";
         else if (VMcommand.contains("push"))
             return "C_PUSH";
-        // For project 7 it's all the possible commands type.
-        else
-            return "commandTypeError";
+        else if (VMcommand.contains("label"))
+            return "C_LABEL";
+        else if (VMcommand.contains("if")) // mabye need to change depend on if go rel!!!!!!!!!!!!!!!!!!!!!
+            return "C_IF";
+        else if (VMcommand.contains("goto"))
+            return "C_GOTO";
+        else if (VMcommand.contains("function"))
+            return "C_FUNCTION";
+        else if (VMcommand.contains("return"))
+            return "C_RETURN";
+        else if (VMcommand.contains("call"))
+            return "C_CALL";
+        else return "commandType-Error";
     }
 
     // Returns the first argument of the current command.
@@ -74,12 +84,12 @@ public class Parser {
     public int arg2() {
         String currentCommandType = commandType();
         if (!currentCommandType.equals("C_PUSH") && !currentCommandType.equals("C_POP") &&
-         !currentCommandType.equals("C_FUNCTION") && !currentCommandType.equals("C_CALL"))
+                !currentCommandType.equals("C_FUNCTION") && !currentCommandType.equals("C_CALL"))
             return -999; // For project 7 and 8.
         else {
             int firstSpace = VMcommand.indexOf(" ");
             int secondSpace = VMcommand.indexOf(" ", firstSpace + 1);
-            return Integer.parseInt(VMcommand.substring(secondSpace + 1)) ;
+            return Integer.parseInt(VMcommand.substring(secondSpace + 1));
         }
     }
 }
