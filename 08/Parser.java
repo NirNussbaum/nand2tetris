@@ -75,7 +75,8 @@ public class Parser {
         else {
             int firstSpace = VMcommand.indexOf(" ");
             int secondSpace = VMcommand.indexOf(" ", firstSpace + 1);
-            return VMcommand.substring(firstSpace + 1, secondSpace);
+            if(secondSpace == -1) return VMcommand.substring(firstSpace + 1);
+            else return VMcommand.substring(firstSpace + 1, secondSpace);
         }
     }
 

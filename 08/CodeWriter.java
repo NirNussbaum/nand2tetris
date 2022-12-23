@@ -367,9 +367,9 @@ public class CodeWriter {
             bw.newLine();
             bw.write("M=M+1"); // SP++
             bw.newLine();
-            writePushPop("PUSH", "constant", 5);
+            writePushPop("C_PUSH", "constant", 5);
             writeArithmetic("sub");
-            writePushPop("PUSH", "constant", nArgs);
+            writePushPop("C_PUSH", "constant", nArgs);
             writeArithmetic("sub");
             bw.write("@SP");
             bw.newLine();
@@ -411,7 +411,7 @@ public class CodeWriter {
             writeLabel(functionName);
             //repeat push nVars local var
             for (int i = 0; i < nVars; i++) {
-                writePushPop("PUSH", "constant", 0);
+                writePushPop("C_PUSH", "constant", 0);
             }
         } catch (IOException e) {
             System.out.println("IOException writeFunction");
@@ -432,6 +432,10 @@ public class CodeWriter {
             else if (segment.equals("LCL")) bw.write("@4");
             bw.newLine();
             bw.write("D=D-A");
+            bw.newLine();
+            bw.write("A=D");
+            bw.newLine();
+            bw.write("D=M");
             bw.newLine();
             bw.write("@" + segment);
             bw.newLine();
@@ -462,12 +466,31 @@ public class CodeWriter {
             bw.newLine();
             bw.write("D=D-A");
             bw.newLine();
+            bw.write("A=D");
+            bw.newLine();
+            bw.write("D=M");
+            bw.newLine();
             bw.write("@retAddr");
             bw.newLine();
             bw.write("M=D");
             bw.newLine();
             // RAM[ARG] = pop()
-            writePushPop("POP", "argument", 0);
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("A=M-1");
+            bw.newLine();
+            bw.write("D=M");
+            bw.newLine();
+            bw.write("@ARG");
+            bw.newLine();
+            bw.write("A=M");
+            bw.newLine();
+            bw.write("M=D");
+            bw.newLine();
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("M=M-1");
+            bw.newLine();
             // SP = ARG + 1
             bw.write("@ARG");
             bw.newLine();
@@ -482,7 +505,12 @@ public class CodeWriter {
             writeRestoreSegments("ARG");
             writeRestoreSegments("LCL");
             //Goto retAddr
-            writeGoto("retAddr");
+            bw.write("@retAddr");
+            bw.newLine();
+            bw.write("A=M");
+            bw.newLine();
+            bw.write("0;JMP");
+            bw.newLine();
         } catch (IOException e) {
             System.out.println("IOException writeReturn");
             return;

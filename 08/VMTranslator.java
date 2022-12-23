@@ -5,12 +5,12 @@ public class VMTranslator {
     public static CodeWriter outPutFile;
 
     public static void main(String[] args) {
-        String sourcePath = args[0];
+        String sourcePath = "FunctionCalls/NestedCall";
         File fileOrDir = new File(sourcePath);
         boolean isDirectory = fileOrDir.isDirectory(); // Check if it's a directory
         if (isDirectory) {
             //create output file with the same path but end with .asm
-            outPutFile = new CodeWriter(new File(args[0] + ".asm"));
+            outPutFile = new CodeWriter(new File("FunctionCalls/NestedCall" + ".asm"));
             File[] files = fileOrDir.listFiles();
             for (File file : files) {
                 if (file.getName().contains(".vm")) {
@@ -21,7 +21,7 @@ public class VMTranslator {
         } else {
             // create a new out put file with the same name like input file but end with
             // .asm
-            outPutFile = new CodeWriter(new File(args[0].replace(".vm", ".asm")));
+            outPutFile = new CodeWriter(new File("FunctionCalls/NestedCall".replace(".vm", ".asm")));
             Parser file = new Parser(fileOrDir);
             processFile(file);
         }
