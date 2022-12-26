@@ -7,13 +7,14 @@ public class CodeWriter {
 
     public BufferedWriter bw;
     public String fileName;
+    public int callCounter = 0;
 
     // Opens an output file and gets ready to write into it.
     public CodeWriter(File outPutFile) {
         try {
             FileWriter outPutFileWriter = new FileWriter(outPutFile);
             bw = new BufferedWriter(outPutFileWriter);
-            setFileName(outPutFile.getName());
+            this.callCounter = 0;
         } catch (IOException e) {
             System.out.println("IOException");
             return;
@@ -157,6 +158,25 @@ public class CodeWriter {
         }
     }
 
+    public void writeInitProg() {
+        try {
+            bw.write("//InitProg");
+            bw.newLine();
+            bw.write("@256");
+            bw.newLine();
+            bw.write("D=A");
+            bw.newLine();
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("M=D");
+            bw.newLine();
+            writeCall("Sys.init", 0);
+        } catch (IOException e) {
+            System.out.println("IOException writeLabel");
+            return;
+        }
+    }
+
     // Writes to the output file the assembly code that implements the given push or
     // pop command.
     public void writePushPop(String command, String segment, int index) {
@@ -265,7 +285,9 @@ public class CodeWriter {
     // Writes assembly code that effects the label command.
     public void writeLabel(String label) {
         try {
-            bw.write("(" + label + ")");
+            bw.write("//label " + fileName + "$" + label);
+            bw.newLine();
+            bw.write("(" + fileName + "$" + label + ")");
             bw.newLine();
         } catch (IOException e) {
             System.out.println("IOException writeLabel");
@@ -276,12 +298,14 @@ public class CodeWriter {
     // Writes assembly code that effects the goto command.
     public void writeGoto(String label) {
         try {
-            bw.write("@" + label);
+            bw.write("//goto " + fileName + "$" + label);
+            bw.newLine();
+            bw.write("@"  + fileName + "$" + label);
             bw.newLine();
             bw.write("0;JMP");
             bw.newLine();
         } catch (IOException e) {
-            System.out.println("IOException writeLabel");
+            System.out.println("IOException writeGoto");
             return;
         }
     }
@@ -289,7 +313,7 @@ public class CodeWriter {
     // Writes assembly code that effects the if-goto command.
     public void writeIf(String label) {
         try {
-            bw.write("//if-goto " + label);
+            bw.write("//if-goto " + fileName + "$" + label);
             bw.newLine();
             bw.write("@SP");
             bw.newLine();
@@ -299,7 +323,7 @@ public class CodeWriter {
             bw.newLine();
             bw.write("D=M");
             bw.newLine();
-            bw.write("@" + label);
+            bw.write("@" + fileName + "$" + label);
             bw.newLine();
             bw.write("D;JNE"); // if D != 0 jump to label
             bw.newLine();
@@ -338,7 +362,7 @@ public class CodeWriter {
             bw.write("//Call " + functionName + " " + nArgs);
             bw.newLine();
             // Save return address
-            bw.write("@retAddrLabel");
+            bw.write("@" + functionName + "$ret." + callCounter);
             bw.newLine();
             bw.write("D=A");
             bw.newLine();
@@ -394,8 +418,13 @@ public class CodeWriter {
             bw.newLine();
             bw.write("M=D");
             bw.newLine();
-            writeGoto(functionName);
-            writeLabel("retAddrLabel");
+            bw.write("@" + functionName );
+            bw.newLine();
+            bw.write("0;JMP");
+            bw.newLine();
+            bw.write("(" + functionName + "$ret." + callCounter + ")");
+            bw.newLine();
+            callCounter++;
         } catch (IOException e) {
             System.out.println("IOException writeCall");
             return;
@@ -408,7 +437,8 @@ public class CodeWriter {
             bw.write("// " + functionName + " " + nVars);
             bw.newLine();
             //Function's entry point
-            writeLabel(functionName);
+            bw.write("(" + functionName + ")");
+            bw.newLine();
             //repeat push nVars local var
             for (int i = 0; i < nVars; i++) {
                 writePushPop("C_PUSH", "constant", 0);
@@ -422,7 +452,7 @@ public class CodeWriter {
     // Writes assembly code that Restore Segments.
     private void writeRestoreSegments(String segment) {
         try {
-            bw.write("@endFrame");
+            bw.write("@R15");
             bw.newLine();
             bw.write("D=M");
             bw.newLine();
@@ -457,7 +487,7 @@ public class CodeWriter {
             bw.newLine();
             bw.write("D=M");
             bw.newLine();
-            bw.write("@endFrame");
+            bw.write("@R15");
             bw.newLine();
             bw.write("M=D");
             bw.newLine();
@@ -470,7 +500,7 @@ public class CodeWriter {
             bw.newLine();
             bw.write("D=M");
             bw.newLine();
-            bw.write("@retAddr");
+            bw.write("@R14");
             bw.newLine();
             bw.write("M=D");
             bw.newLine();
@@ -505,7 +535,7 @@ public class CodeWriter {
             writeRestoreSegments("ARG");
             writeRestoreSegments("LCL");
             //Goto retAddr
-            bw.write("@retAddr");
+            bw.write("@R14");
             bw.newLine();
             bw.write("A=M");
             bw.newLine();

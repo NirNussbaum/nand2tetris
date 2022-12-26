@@ -44,8 +44,8 @@ public class Parser {
                 || VMcommand.contains("and") ||
                 VMcommand.contains("or") || VMcommand.contains("not");
 
-        if (checkArithmetic)
-            return "C_ARITHMETIC";
+        if (VMcommand.contains("call"))
+            return "C_CALL";
         else if (VMcommand.contains("pop"))
             return "C_POP";
         else if (VMcommand.contains("push"))
@@ -60,8 +60,8 @@ public class Parser {
             return "C_FUNCTION";
         else if (VMcommand.contains("return"))
             return "C_RETURN";
-        else if (VMcommand.contains("call"))
-            return "C_CALL";
+        else if (checkArithmetic)
+            return "C_ARITHMETIC";
         else return "commandType-Error";
     }
 

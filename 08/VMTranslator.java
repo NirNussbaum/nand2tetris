@@ -5,24 +5,30 @@ public class VMTranslator {
     public static CodeWriter outPutFile;
 
     public static void main(String[] args) {
-        String sourcePath = "FunctionCalls/NestedCall";
+        String sourcePath = args[0];
         File fileOrDir = new File(sourcePath);
         boolean isDirectory = fileOrDir.isDirectory(); // Check if it's a directory
         if (isDirectory) {
             //create output file with the same path but end with .asm
-            outPutFile = new CodeWriter(new File("FunctionCalls/NestedCall" + ".asm"));
+            outPutFile = new CodeWriter(new File(args[0] + "/" + fileOrDir.getName() + ".asm"));
             File[] files = fileOrDir.listFiles();
+            int counterVM = numOfVMFile(files);
+            if (counterVM > 1) {
+                outPutFile.writeInitProg();
+            } 
             for (File file : files) {
                 if (file.getName().contains(".vm")) {
                     Parser parser = new Parser(file);
+                    outPutFile.setFileName(file.getName().replace(".vm", ""));
                     processFile(parser);
                 }
             }
         } else {
             // create a new out put file with the same name like input file but end with
             // .asm
-            outPutFile = new CodeWriter(new File("FunctionCalls/NestedCall".replace(".vm", ".asm")));
+            outPutFile = new CodeWriter(new File(args[0].replace(".vm", ".asm")));
             Parser file = new Parser(fileOrDir);
+            outPutFile.setFileName(fileOrDir.getName().replace(".vm", ""));
             processFile(file);
         }
         // close file.
@@ -51,6 +57,15 @@ public class VMTranslator {
                 outPutFile.writeCall(file.arg1(), file.arg2());
             }
         }
+    }
 
+    public static int numOfVMFile(File[] files) {
+        int counterVM = 0;
+        for (File file : files) {
+            if (file.getName().contains(".vm")) {
+                counterVM++;
+            }
+        }
+        return counterVM;
     }
 }
