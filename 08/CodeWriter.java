@@ -50,6 +50,7 @@ public class CodeWriter {
 
     // template for arithmetic and logical commands.
     static int numberOfLogical = 0;
+
     private void createLogicalTemplate(String speicalCommand, String nameOfFunction) {
         numberOfLogical++;
         try {
@@ -189,7 +190,6 @@ public class CodeWriter {
             segment = "THIS";
         else if (segment.equals("that"))
             segment = "THAT";
-
         try {
             if (command.equals("C_PUSH")) {
                 bw.write("//PUSH " + segment + " " + index);
@@ -203,6 +203,11 @@ public class CodeWriter {
                 } else if (segment.equals("pointer")) {
                     // pointer
                     bw.write("@" + (3 + index));
+                    bw.newLine();
+                    bw.write("D=M");
+                    bw.newLine();
+                } else if (segment.equals("static")) {
+                    bw.write("@" + fileName + "." + index);
                     bw.newLine();
                     bw.write("D=M");
                     bw.newLine();
@@ -242,6 +247,11 @@ public class CodeWriter {
                 } else if (segment.equals("pointer")) {
                     // pointer
                     bw.write("@" + (3 + index));
+                    bw.newLine();
+                    bw.write("D=A");
+                    bw.newLine();
+                } else if (segment.equals("static")) {
+                    bw.write("@" + fileName + "." + index);
                     bw.newLine();
                     bw.write("D=A");
                     bw.newLine();
@@ -300,7 +310,7 @@ public class CodeWriter {
         try {
             bw.write("//goto " + fileName + "$" + label);
             bw.newLine();
-            bw.write("@"  + fileName + "$" + label);
+            bw.write("@" + fileName + "$" + label);
             bw.newLine();
             bw.write("0;JMP");
             bw.newLine();
@@ -409,7 +419,7 @@ public class CodeWriter {
             bw.newLine();
             bw.write("M=D");
             bw.newLine();
-            //LCL = SP
+            // LCL = SP
             bw.write("@SP");
             bw.newLine();
             bw.write("D=M");
@@ -418,7 +428,7 @@ public class CodeWriter {
             bw.newLine();
             bw.write("M=D");
             bw.newLine();
-            bw.write("@" + functionName );
+            bw.write("@" + functionName);
             bw.newLine();
             bw.write("0;JMP");
             bw.newLine();
@@ -436,10 +446,10 @@ public class CodeWriter {
         try {
             bw.write("// " + functionName + " " + nVars);
             bw.newLine();
-            //Function's entry point
+            // Function's entry point
             bw.write("(" + functionName + ")");
             bw.newLine();
-            //repeat push nVars local var
+            // repeat push nVars local var
             for (int i = 0; i < nVars; i++) {
                 writePushPop("C_PUSH", "constant", 0);
             }
@@ -456,10 +466,14 @@ public class CodeWriter {
             bw.newLine();
             bw.write("D=M");
             bw.newLine();
-            if (segment.equals("THAT")) bw.write("@1");
-            else if (segment.equals("THIS")) bw.write("@2");
-            else if (segment.equals("ARG")) bw.write("@3");
-            else if (segment.equals("LCL")) bw.write("@4");
+            if (segment.equals("THAT"))
+                bw.write("@1");
+            else if (segment.equals("THIS"))
+                bw.write("@2");
+            else if (segment.equals("ARG"))
+                bw.write("@3");
+            else if (segment.equals("LCL"))
+                bw.write("@4");
             bw.newLine();
             bw.write("D=D-A");
             bw.newLine();
@@ -534,7 +548,7 @@ public class CodeWriter {
             writeRestoreSegments("THIS");
             writeRestoreSegments("ARG");
             writeRestoreSegments("LCL");
-            //Goto retAddr
+            // Goto retAddr
             bw.write("@R14");
             bw.newLine();
             bw.write("A=M");
