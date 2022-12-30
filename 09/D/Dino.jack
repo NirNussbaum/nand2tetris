@@ -1,8 +1,8 @@
 class Dino {
 
     field int x, y; // screen location of the dino.
-    field int size, wight; //
-    field int vel;
+    field int size, wight; 
+    field int jumpDelay;
     field int memAddress;
     field boolean jumped;
  
@@ -23,28 +23,26 @@ class Dino {
        return;
     }
 
-    method int get_y1(){
-      return y + vel + 16;
-    }
-    
-    method int get_y2(){
-      return y + vel + 20;
+   /** get dino y position with jump delay. */
+    method int get_y(){
+      return y + jumpDelay + 16;
     }
 
     /** Draws the Dino on the screen. */
     method void draw() {
-       do Screen.setColor(true);
-       if (vel = 14){
-         let vel = 0;
+      do Screen.setColor(true);
+      if (jumpDelay = 16){
+         let jumpDelay = 0;
          let jumped = false;
-       }
-       if(jumped){
-         let vel = vel + 2;
-       }
-      let y = y + vel;
+      }
+      if(jumped){
+         let jumpDelay = jumpDelay + 2;
+      }
+      let y = y + jumpDelay;
       let memAddress = Dino.get_add(y);
+      //Draw dino start with memAddress.
       do draw_dino(memAddress);
-       return;
+      return;
     }
 
     /** draw the dino using the ram address */
@@ -91,29 +89,28 @@ class Dino {
       return;
    }
 
-   /** get the dino top left address */
-   function int get_add(int y){
-      return 32 * y +1;
-   }
-
     /** Erases the Dino from the screen. */
-    method void erase() {
-       do Screen.setColor(false);
+   method void erase() {
+      do Screen.setColor(false);
       let memAddress = Dino.get_add(y);
       do erase_dino(memAddress);
-       return;
-    }
- 
+      return;
+   }
 
-    /** let the vino vel to be -16. */
+   /** get the dino top left address */
+   function int get_add(int y){
+      return 32 * y + 1;
+   }
+
+    /** let the vino jumpDelay to be -16. */
     method void jump() {
        if (~jumped) {
          let jumped = true;
          do erase();
-          let vel = -16;
+         let jumpDelay = -18;
        }
        return;
     }
- 
+
  }
  

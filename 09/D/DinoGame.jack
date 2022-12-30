@@ -1,79 +1,78 @@
 class DinoGame {
 
-    field Obstacle ob; 
-    field Dino dino;
-    field int direction; // the square's current direction: 
+   field Obstacle ob; 
+   field Dino dino;
+   field int direction; // the square's current direction: 
                          // 0=none, 1=up, 2=down, 3=left, 4=right
    field int score;
     /** Constructs a new Dino Game. */
-    constructor DinoGame new() {
+   constructor DinoGame new() {
        // Creates a line and a Dino and positions it on the line.
-       var Array a;
-       let a = Array.new(4);
-       let a[0] = 10;
-       let a[1] = 10;
-       let a[2] = 20;
-       let a[3] = 30; 
-       let ob = Obstacle.new(a, 4, 226);
-       let dino = Dino.new(30,210); //Starting pos of dino.
+       var Array obHeights;
+       let obHeights = Array.new(5);
+       let obHeights[0] = 10;
+       let obHeights[1] = 15;
+       let obHeights[2] = 20;
+       let obHeights[3] = 25; 
+       let obHeights[4] = 30; 
+       let ob = Obstacle.new(obHeights, 5, 245);
+       let dino = Dino.new(30,229); //Starting pos of dino.
        let direction = 0;  // initial state is no movement
-       do Screen.drawLine(0, 226, 500, 226);
+       do Screen.drawLine(0, 245, 500, 245);
        let score = 0;
        return this;
-    }
+   }
  
     /** Disposes this game. */
-    method void dispose() {
+   method void dispose() {
        do dino.dispose();
        do ob.dispose();
        do Memory.deAlloc(this);
        return;
-    }
+   }
  
     /** Moves the dino and the obstacle. */
-    method void movedino() {
+   method void movedino() {
        do dino.erase();
        do dino.draw();
        do ob.erase();
        if(ob.draw()){
          let score = score + 1;
        }
-       do Sys.wait(20);  // delays the next movement
+       do Sys.wait(25);  // delays the next movement
        return;
-    }
-        /** check if the dino colided with an obstacle. */
-
-    method boolean collusion(){
-      if(32 > ob.get_x1()){
-         if (ob.get_x1() < 16){
-         if(dino.get_y1() > ob.get_y()){
+   }
+        
+   /** check if the dino collusion with an obstacle. */
+   method boolean collusion(){
+      if(16 > ob.get_x()){
+         if(dino.get_y() > ob.get_y()){
             return true;
-         }
          }
       }
       return false;
-    }
+   }
  
     /** Runs the game: handles the user's inputs and moves the dino accordingly */
-    method void run() {
-       var char key;  // the key currently pressed by the user
+   method void run() {
+       var char key;  // the key currently pressed by the user.
        var boolean exit;
        let exit = false;
        while (~exit) {
-         do Output.moveCursor(200,0);
+         do Output.moveCursor(0,25);
          do Output.printString("Dino Score: ");
          do Output.printInt(score);
-          let key = Keyboard.keyPressed();
-          do movedino();
-          if (key = 81)  { let exit = true; }     // q key
-          if (key = 140)  { let exit = true; } // esc key
-          if (key = 32) { do dino.jump(); }   // space key
-       if (collusion()){
-         let exit = true;
-       }
-    }
+         let key = Keyboard.keyPressed();
+         do movedino();
+         if (key = 81)  { let exit = true; }    // q key
+         if (key = 140)  { let exit = true; } // esc key
+         if (key = 32) { do dino.jump(); }   // space key
+         if (collusion()){
+            let exit = true;
+         }
+      }
     return;
- }
+   }
 }
  
  
