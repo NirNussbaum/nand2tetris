@@ -1,12 +1,11 @@
 class Obstacle{
 
-    
-    field  Array board_location;
+    field Array board_location;
     field int current;
     field int all;
     field int x;
-    /** Constructs a new obtacles with a given location and size. */
 
+    /** Constructs a new obtacles with a given location and size. */
     constructor Obstacle new(Array locations, int counter, int board_size) {
         var int c;
         let c = 0;
@@ -20,12 +19,15 @@ class Obstacle{
         let current = 0;
         return this;
     }
+
     method int get_x1(){
         return x;
       }
-      method int get_y(){
+
+    method int get_y(){
         return 230 - board_location[current];
-      }
+    }
+    
     /** Draws the obstacle on the screen. and chose a new one if needed */
     method boolean draw(){
         var boolean pass;
@@ -61,6 +63,4 @@ class Obstacle{
         do Memory.deAlloc(this);
         return;
      }
-
-
 }

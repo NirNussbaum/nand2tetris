@@ -1,22 +1,52 @@
 class Dino {
 
-    field int x, y; // screen location of the dino's top-left corner
-    field int size, wight;
+    field int x, y; // screen location of the dino.
+    field int size, wight; //
     field int vel;
     field int memAddress;
     field boolean jumped;
  
     /** Constructs a new Dino with a given location and size. */
-    constructor Dino new(int Ax, int Ay) {
-       let x = Ax;
-       let y = Ay;
+    constructor Dino new(int a, int b) {
+       let x = a;
+       let y = b;
        let size = 20;
        let wight = 20;
        let jumped = false;
-       
        do draw();
        return this;
     }
+
+    /** Disposes this Dino. */
+    method void dispose() {
+       do Memory.deAlloc(this);
+       return;
+    }
+
+    method int get_y1(){
+      return y + vel + 16;
+    }
+    
+    method int get_y2(){
+      return y + vel + 20;
+    }
+
+    /** Draws the Dino on the screen. */
+    method void draw() {
+       do Screen.setColor(true);
+       if (vel = 14){
+         let vel = 0;
+         let jumped = false;
+       }
+       if(jumped){
+         let vel = vel + 2;
+       }
+      let y = y + vel;
+      let memAddress = Dino.get_add(y);
+      do draw_dino(memAddress);
+       return;
+    }
+
     /** draw the dino using the ram address */
    method void draw_dino(int location) {
       let memAddress = 16384+location;
@@ -38,45 +68,7 @@ class Dino {
       do Memory.poke(memAddress+480, 816);
       return;
    }
-   /** get the dino top left address */
-   function int get_add(int y){
-      return 32 * y +1;
-   }
- 
-    /** Disposes this Dino. */
-    method void dispose() {
-       do Memory.deAlloc(this);
-       return;
-    }
-    method int get_y1(){
-      return y + vel + 16;
-    }
-    method int get_y2(){
-      return y + vel + 20;
-    }
-    /** Draws the Dino on the screen. */
-    method void draw() {
-       do Screen.setColor(true);
-       if (vel = 14){
-         let vel = 0;
-         let jumped = false;
-       }
-       if(jumped){
-         let vel = vel + 2;
-       }
-      let y = y + vel;
-      let memAddress = Dino.get_add(y);
-      do draw_dino(memAddress);
-       return;
-    }
- 
-    /** Erases the Dino from the screen. */
-    method void erase() {
-       do Screen.setColor(false);
-      let memAddress = Dino.get_add(y);
-      do erase_dino(memAddress);
-       return;
-    }
+
     /** erase the dino using the ram addresses. */
     method void erase_dino(int location) {
       let memAddress = 16384+location;
@@ -98,6 +90,19 @@ class Dino {
       do Memory.poke(memAddress+480, 0);
       return;
    }
+
+   /** get the dino top left address */
+   function int get_add(int y){
+      return 32 * y +1;
+   }
+
+    /** Erases the Dino from the screen. */
+    method void erase() {
+       do Screen.setColor(false);
+      let memAddress = Dino.get_add(y);
+      do erase_dino(memAddress);
+       return;
+    }
  
 
     /** let the vino vel to be -16. */
