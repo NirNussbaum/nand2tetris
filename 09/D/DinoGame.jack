@@ -1,0 +1,95 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/09/Square/SquareGame.jack
+
+/**
+ * Implements the Square Dance game.
+ * This simple game allows the user to move a black square around
+ * the screen, and change the square's size during the movement.
+ * When the game starts, a square of 30 by 30 pixels is shown at the
+ * top-left corner of the screen. The user controls the square as follows.
+ * The 4 arrow keys are used to move the square up, down, left, and right.
+ * The 'z' and 'x' keys are used, respectively, to decrement and increment
+ * the square's size. The 'q' key is used to quit the game.
+ */
+
+ class DinoGame {
+    field Obstacle ob; // the square of this game
+    field Dino dino;
+    field int direction; // the square's current direction: 
+                         // 0=none, 1=up, 2=down, 3=left, 4=right
+   field int score;
+    /** Constructs a new Dino Game. */
+    constructor DinoGame new() {
+       // Creates a line and a Dino and positions it on the line.
+       var Array a;
+       let a = Array.new(4);
+       let a[0] = 10;
+       let a[1] = 10;
+       let a[2] = 20;
+       let a[3] = 30; 
+       let ob = Obstacle.new(a, 4, 226);
+       let dino = Dino.new(30,210);
+       let direction = 0;  // initial state is no movement
+       do Screen.drawLine(0, 226, 500, 226);
+       let score = 0;
+       return this;
+    }
+ 
+    /** Disposes this game. */
+    method void dispose() {
+       do dino.dispose();
+       do ob.dispose();
+       do Memory.deAlloc(this);
+       return;
+    }
+ 
+    /** Moves the dino and the obstacle. */
+    method void movedino() {
+       do dino.erase();
+       do dino.draw();
+       do ob.erase();
+       if(ob.draw()){
+         let score = score + 1;
+       }
+       do Sys.wait(20);  // delays the next movement
+       return;
+    }
+        /** check if the dino colided with an obstacle. */
+
+    method boolean collusion(){
+      if(32 > ob.get_x1()){
+         if (ob.get_x1() < 16){
+         if(dino.get_y1() > ob.get_y()){
+            return true;
+         }
+         }
+      }
+      return false;
+    }
+ 
+    /** Runs the game: handles the user's inputs and moves the dino accordingly */
+    method void run() {
+       var char key;  // the key currently pressed by the user
+       var boolean exit;
+       let exit = false;
+       while (~exit) {
+         do Output.moveCursor(0,0);
+
+         do Output.printString("score: ");
+         do Output.printInt(score);
+          let key = Keyboard.keyPressed();
+          do movedino();
+          if (key = 81)  { let exit = true; }     // q key
+          if (key = 32) { do dino.jump(); }   // up arrow
+       if (collusion()){
+         let exit = true;
+       }
+    }
+    return;
+ }
+}
+ 
+ 
+ 
