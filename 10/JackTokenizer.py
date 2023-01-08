@@ -9,7 +9,7 @@ IDENTIFIER_PATTERN = "([a-zA-Z_][a-zA-Z1-9_]*)"
 ELEMENTS_PATTERN = f"{KEY_WORD_PATTERN}|{SYMBOL_PATTERN}|{INT_PATTERN}|{STRING_PATTERN}|{IDENTIFIER_PATTERN}"
 
 def get_array_of_tokens(string):
-  """get array of tokens form a file string """
+  """get array of tokens form a file string. """
   arr = remove_comments(string)
   #Delete \n
   arr = arr.replace("\n", "")
@@ -20,7 +20,7 @@ def get_array_of_tokens(string):
   return arr
 
 def remove_comments(string):
-  """ remove all inline comments in regular commentsfrom string """
+  """ remove all inline comments and regular comments from string. """
   # regular comments
   string = re.sub(re.compile("/\*.*?\*/"), "", string)
   # inline comments
