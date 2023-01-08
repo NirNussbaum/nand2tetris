@@ -22,7 +22,7 @@ def get_array_of_tokens(string):
 def remove_comments(string):
   """ remove all inline comments and regular comments from string. """
   # regular comments
-  string = re.sub(re.compile("/\*.*?\*/"), "", string)
+  string = re.sub(re.compile(r"/\*\*.*?\*/", re.DOTALL), "", string)
   # inline comments
   return re.sub(re.compile("//.*?\n"), "", string)
 
