@@ -1,9 +1,0 @@
-class Main {
-  function void main() {
-    var SpongbobGame game;
-    let game = SpongbobGame.new();
-    do game.run();
-    do game.dispose();
-    return;
-  }
-}
