@@ -4,11 +4,10 @@ import re
 KEY_WORD_PATTERN = "(class|constructor|function|method|static|field|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return)"
 SYMBOL_PATTERN = "([{}()\[\].,;+\-*/&|<>=~])"
 INT_PATTERN = "(\d+)"
-IDENTIFIER_PATTERN = "(^[a-zA-Z_][a-zA-Z1-9_]*$)"
+IDENTIFIER_PATTERN = "(^[a-zA-Z_]+[a-zA-Z0-9_]*$)"
 ELEMENTS_PATTERN = f"{KEY_WORD_PATTERN}|{SYMBOL_PATTERN}|{INT_PATTERN}|{IDENTIFIER_PATTERN}"
 
 STRING_PATTERN = "\"(.*)\""
-
 
 def get_array_of_tokens(string):
     """get array of tokens form a file string. """
@@ -19,8 +18,18 @@ def get_array_of_tokens(string):
     # Delete None from arr
     arr = [word.strip() for word in arr if (word != None)]
     arr = [word for word in arr if len(word) > 0]
-    return arr
+    return split_list_items(arr)
 
+def split_list_items(lst):
+    """Spilt words without double quotes."""
+    new_list = []
+    for item in lst:
+        if " " in item and "\"" not in item:
+            substrings = re.split(r'\s+', item)
+            new_list.extend(substrings)
+        else:
+            new_list.append(item)
+    return new_list
 
 def remove_comments(string):
     """ remove all inline comments and regular comments from string. """
