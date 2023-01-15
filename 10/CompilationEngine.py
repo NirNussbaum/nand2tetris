@@ -67,6 +67,11 @@ class CompilationEngine:
                 self.output_file.write(
                     " " * self.number_of_spaces + "</subroutineDec>\n")
 
+        self.number_of_spaces -= SPACES
+        self.output_file.write(
+            " " * self.number_of_spaces + "</class>\n")
+
+
     def compile_class_var_dec(self):
         """Compiles a static veriable declaration or a field declaration."""
 
