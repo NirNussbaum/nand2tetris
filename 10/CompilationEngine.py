@@ -658,5 +658,5 @@ class CompilationEngine:
 
 
 # Testing!!!
-test_object = CompilationEngine("./test.txt", "./test.xml")
-test_object.compile_class()
+# test_object = CompilationEngine("./test.txt", "./test.xml")
+# test_object.compile_class()
