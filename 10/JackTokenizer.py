@@ -1,7 +1,7 @@
 import re
 
 # All the patternes in JackTokenizer
-KEY_WORD_PATTERN = "(class|constructor|function|method|static|field|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return)"
+KEY_WORD_PATTERN = "(class|constructor|function|method|static|field|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return)\s+"
 SYMBOL_PATTERN = "([{}()\[\].,;+\-*/&|<>=~])"
 INT_PATTERN = "(\d+)"
 IDENTIFIER_PATTERN = "(^[a-zA-Z_]+[a-zA-Z0-9_]*$)"
@@ -63,15 +63,15 @@ class JackTokenizer:
 
     def tokenType(self):
         """Returns the type of the current token, as a constant."""
-        if re.fullmatch(KEY_WORD_PATTERN, self.current_token):
+        if re.fullmatch("^" + KEY_WORD_PATTERN.replace('\s+', '') + "$", self.current_token):
             return "KEYWORD"
-        elif re.fullmatch(SYMBOL_PATTERN, self.current_token):
+        elif re.fullmatch("^" + SYMBOL_PATTERN + "$", self.current_token):
             return "SYMBOL"
-        elif re.fullmatch(IDENTIFIER_PATTERN, self.current_token):
+        elif re.fullmatch("^" + IDENTIFIER_PATTERN + "$", self.current_token):
             return "IDENTIFIER"
-        elif re.fullmatch(INT_PATTERN, self.current_token):
+        elif re.fullmatch("^" + INT_PATTERN + "$", self.current_token):
             return "INT_CONST"
-        elif re.fullmatch(STRING_PATTERN, self.current_token):
+        elif re.fullmatch("^" + STRING_PATTERN + "$", self.current_token):
             return "STRING_CONST"
         else:
             return "ERROR"

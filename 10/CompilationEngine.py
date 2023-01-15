@@ -67,9 +67,16 @@ class CompilationEngine:
                 self.output_file.write(
                     " " * self.number_of_spaces + "</subroutineDec>\n")
 
-        self.number_of_spaces -= SPACES
-        self.output_file.write(
-            " " * self.number_of_spaces + "</class>\n")
+
+            if self.tokenizer.current_token == "}":
+                self.write_symbol("}")
+                self.tokenizer.advance()
+            else:
+                return "} ERROR"
+
+            self.number_of_spaces -= SPACES
+            self.output_file.write(
+                " " * self.number_of_spaces + "</class>\n")
 
 
     def compile_class_var_dec(self):
@@ -379,7 +386,7 @@ class CompilationEngine:
         self.write_key_word(self.tokenizer.keyWord())
         self.tokenizer.advance()
 
-        if self.tokenizer.tokenType() == "(":
+        if self.tokenizer.current_token == "(":
             self.write_symbol(self.tokenizer.symbol())
             self.tokenizer.advance()
         else:
@@ -387,7 +394,7 @@ class CompilationEngine:
 
         self.compile_expression()
 
-        if self.tokenizer.tokenType() == ")":
+        if self.tokenizer.current_token == ")":
             self.write_symbol(self.tokenizer.symbol())
             self.tokenizer.advance()
         else:
@@ -466,7 +473,6 @@ class CompilationEngine:
         self.number_of_spaces -= SPACES
         self.output_file.write(
             " " * self.number_of_spaces + "</doStatement>\n")
-
 
     def compile_return(self):
         self.output_file.write(
@@ -569,11 +575,11 @@ class CompilationEngine:
                 self.write_symbol(")")
                 self.tokenizer.advance()
 
-            elif self.tokenizer.current_token in UNARY_OP:
-                self.write_symbol(self.tokenizer.current_token)
-                self.tokenizer.advance()
+        elif self.tokenizer.current_token in UNARY_OP:
+            self.write_symbol(self.tokenizer.current_token)
+            self.tokenizer.advance()
 
-                self.compile_term()
+            self.compile_term()
 
         self.number_of_spaces -= SPACES
         self.output_file.write(
@@ -621,6 +627,13 @@ class CompilationEngine:
 
     def write_symbol(self, str_symbol):
         """Write symbol tag to the output file."""
+        if str_symbol == "<":
+            str_symbol = "&lt;"
+        elif str_symbol == ">":
+            str_symbol = "&gt;"
+        elif str_symbol == "&":
+            str_symbol = "&amp;"
+
         instruction = " " * self.number_of_spaces + \
             "<symbol> " + str_symbol + " </symbol>\n"
         self.output_file.write(instruction)
