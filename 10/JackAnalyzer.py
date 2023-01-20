@@ -20,8 +20,5 @@ def jack_analyzer(input_path: str):
         engine = CompilationEngine(input_path, output_path_file) 
         engine.compile_class()
 
-# if __name__ == "__main__" and len(sys.argv) == 2:
-#     jack_analyzer(sys.argv[1])
-
-if __name__ == "__main__":
-    jack_analyzer("./text.cmp")
+if __name__ == "__main__" and len(sys.argv) == 2:
+    jack_analyzer(sys.argv[1])
